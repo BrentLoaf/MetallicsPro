@@ -1,6 +1,6 @@
-package org.brent.triggerlib.metallicspro.ores.blocks;
+package org.brent.triggerlib.metallicspro.blocks.ore;
 
-import org.brent.triggerlib.metallicspro.ores.items.OreItem;
+import org.brent.triggerlib.metallicspro.items.ore.OreItem;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 

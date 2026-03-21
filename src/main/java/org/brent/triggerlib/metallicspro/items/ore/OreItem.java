@@ -1,4 +1,4 @@
-package org.brent.triggerlib.metallicspro.ores.items;
+package org.brent.triggerlib.metallicspro.items.ore;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

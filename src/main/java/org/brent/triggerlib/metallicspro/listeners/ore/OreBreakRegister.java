@@ -2,7 +2,7 @@ package org.brent.triggerlib.metallicspro.listeners.ore;
 
 import org.brent.triggerlib.metallicspro.MetallicsPro;
 import org.brent.triggerlib.metallicspro.events.OreBreakEvent;
-import org.brent.triggerlib.metallicspro.ores.blocks.OreBlock;
+import org.brent.triggerlib.metallicspro.blocks.ore.OreBlock;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;

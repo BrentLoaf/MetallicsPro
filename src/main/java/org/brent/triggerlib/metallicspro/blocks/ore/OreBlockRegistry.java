@@ -1,4 +1,4 @@
-package org.brent.triggerlib.metallicspro.ores.blocks;
+package org.brent.triggerlib.metallicspro.blocks.ore;
 
 import java.util.HashSet;
 

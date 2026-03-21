@@ -1,6 +1,6 @@
-package org.brent.triggerlib.metallicspro.ores.blocks;
+package org.brent.triggerlib.metallicspro.blocks.ore;
 
-import org.brent.triggerlib.metallicspro.ores.items.LowGradeMetallicOreItem;
+import org.brent.triggerlib.metallicspro.items.ore.LowGradeMetallicOreItem;
 import org.bukkit.Material;
 
 public final class LowGradeMetallicOreBlock extends OreBlock {

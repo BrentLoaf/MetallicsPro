@@ -1,9 +1,8 @@
 package org.brent.triggerlib.metallicspro;
 
-import org.brent.triggerlib.metallicspro.events.OreBreakEvent;
 import org.brent.triggerlib.metallicspro.listeners.ore.OreBreakListener;
 import org.brent.triggerlib.metallicspro.listeners.ore.OreBreakRegister;
-import org.brent.triggerlib.metallicspro.ores.blocks.OreBlockRegistry;
+import org.brent.triggerlib.metallicspro.blocks.ore.OreBlockRegistry;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class MetallicsPro extends JavaPlugin {
