@@ -13,8 +13,6 @@ public class OreBreakListener implements Listener {
     public void onOreBreak(OreBreakEvent event) {
         Block block = event.getBlock();
 
-
-
         block.getWorld().dropItemNaturally(
                 block.getLocation().add(0.5, 0.5, 0.5),
                 event.getOreBlock().getDroppedItem(event.getFortuneLevel())

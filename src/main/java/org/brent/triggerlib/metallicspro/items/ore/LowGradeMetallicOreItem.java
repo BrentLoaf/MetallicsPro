@@ -1,5 +1,6 @@
 package org.brent.triggerlib.metallicspro.items.ore;
 
+import org.brent.triggerlib.metallicspro.items.Rarity;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -7,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 public class LowGradeMetallicOreItem extends OreItem {
 
     public LowGradeMetallicOreItem() {
-        super(Material.RAW_COPPER);
+        super("Low-Grade Metallic Ore", Material.RAW_COPPER, Rarity.COMMON);
     }
 
     @Override
