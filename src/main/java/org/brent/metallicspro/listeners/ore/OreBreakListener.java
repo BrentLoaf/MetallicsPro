@@ -1,7 +1,7 @@
-package org.brent.triggerlib.metallicspro.listeners.ore;
+package org.brent.metallicspro.listeners.ore;
 
-import org.brent.triggerlib.metallicspro.MetallicsPro;
-import org.brent.triggerlib.metallicspro.events.OreBreakEvent;
+import org.brent.metallicspro.MetallicsPro;
+import org.brent.metallicspro.events.OreBreakEvent;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

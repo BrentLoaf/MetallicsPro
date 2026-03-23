@@ -1,6 +1,7 @@
-package org.brent.triggerlib.metallicspro.blocks.ore;
+package org.brent.metallicspro.blocks.ore;
 
-import org.brent.triggerlib.metallicspro.items.ore.OreItem;
+import org.brent.metallicspro.items.CustomItem;
+import org.brent.metallicspro.items.ore.OreItem;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -24,7 +25,7 @@ public abstract class OreBlock {
     }
 
     public ItemStack getDroppedItem() {
-        ItemStack drops = oreItem.getItemStack().clone();
+        ItemStack drops = oreItem.getRawOre().getItemStack().clone();
 
         int amount = dropAmount == 1 ? 1 : new Random().nextInt(dropAmount) + 1;
         drops.setAmount(amount);
@@ -33,7 +34,7 @@ public abstract class OreBlock {
     }
 
     public ItemStack getDroppedItem(int fortuneLevel) {
-        ItemStack drops = oreItem.getItemStack().clone();
+        ItemStack drops = oreItem.getRawOre().getItemStack().clone();
 
         int baseAmount = dropAmount == 1 ? 1 : ThreadLocalRandom.current().nextInt(dropAmount) + 1;
         int finalAmount = baseAmount;

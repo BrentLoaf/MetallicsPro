@@ -1,6 +1,6 @@
-package org.brent.triggerlib.metallicspro.events;
+package org.brent.metallicspro.events;
 
-import org.brent.triggerlib.metallicspro.blocks.ore.OreBlock;
+import org.brent.metallicspro.blocks.ore.OreBlock;
 import org.bukkit.block.Block;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

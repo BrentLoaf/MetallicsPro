@@ -1,4 +1,4 @@
-package org.brent.triggerlib.metallicspro.items;
+package org.brent.metallicspro.items;
 
 import org.bukkit.ChatColor;
 

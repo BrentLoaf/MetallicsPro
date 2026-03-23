@@ -1,4 +1,4 @@
 name: MetallicsPro
 version: '${project.version}'
-main: org.brent.triggerlib.metallicspro.MetallicsPro
+main: org.brent.metallicspro.MetallicsPro
 api-version: '1.21'

@@ -1,14 +1,19 @@
-package org.brent.triggerlib.metallicspro.items;
+package org.brent.metallicspro.items;
 
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
+import org.brent.metallicspro.MetallicsPro;
+import org.brent.metallicspro.recpies.RecipeBuilder;
+import org.bukkit.*;
+import org.bukkit.inventory.*;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
 
 public abstract class CustomItem {
 
     protected final String name;
     protected final Material baseMaterial;
     protected final Rarity rarity;
+    protected final List<RecipeBuilder> recipeBuilders = new ArrayList<>();
 
     public CustomItem(String name, Material baseMaterial, Rarity rarity) {
         this.name = name;
@@ -26,8 +31,16 @@ public abstract class CustomItem {
         return itemStack;
     }
 
+    public void init(ItemRegistry registry) {
+        for (RecipeBuilder recipe : recipeBuilders) MetallicsPro.getRecipeRegistry().add(recipe);
+    }
+
     public String getName() {
         return name;
+    }
+
+    public String getRawName() {
+        return name.toLowerCase().replace(' ', '_');
     }
 
     public Material getBaseMaterial() {
@@ -36,5 +49,13 @@ public abstract class CustomItem {
 
     public Rarity getRarity() {
         return rarity;
+    }
+
+    public List<RecipeBuilder> getRecipeBuilders() {
+        return recipeBuilders;
+    }
+
+    public void addRecipeBuilder(RecipeBuilder recipeBuilder) {
+        this.recipeBuilders.add(recipeBuilder);
     }
 }
