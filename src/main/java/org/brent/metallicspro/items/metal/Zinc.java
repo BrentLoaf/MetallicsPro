@@ -1,10 +1,10 @@
 package org.brent.metallicspro.items.metal;
 
-import org.brent.metallicspro.items.Rarity;
+import org.bukkit.inventory.ItemRarity;
 
 public class Zinc extends Metal {
 
     public Zinc() {
-        super("Zinc", Rarity.COMMON);
+        super("Zinc", ItemRarity.COMMON);
     }
 }

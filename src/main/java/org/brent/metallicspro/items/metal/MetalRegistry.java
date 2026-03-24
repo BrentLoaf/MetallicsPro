@@ -1,6 +1,5 @@
 package org.brent.metallicspro.items.metal;
 
-import io.papermc.paper.potion.PotionMix;
 import org.brent.metallicspro.items.ItemRegistry;
 import org.brent.metallicspro.items.ore.LowGradeMetallicOre;
 import org.brent.metallicspro.items.ore.OreItem;

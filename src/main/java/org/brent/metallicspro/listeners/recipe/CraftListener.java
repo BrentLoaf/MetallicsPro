@@ -1,8 +1,9 @@
-package org.brent.metallicspro.listeners.items;
+package org.brent.metallicspro.listeners.recipe;
 
 import org.brent.metallicspro.MetallicsPro;
 import org.brent.metallicspro.items.CustomItem;
-import org.brent.metallicspro.recpies.RecipeBuilder;
+import org.brent.metallicspro.recpies.types.CraftBuilder;
+import org.brent.metallicspro.recpies.types.RecipeBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Keyed;
 import org.bukkit.Material;
@@ -21,32 +22,34 @@ public class CraftListener implements Listener {
         ItemStack cursor = event.getCursor();
         ItemStack result = event.getRecipe().getResult();
 
-        if ((!event.getClick().isShiftClick() && !cursor.isSimilar(result))) return;
+        if (!event.getClick().isShiftClick() &&
+                        cursor.getType() != Material.AIR &&
+                        !cursor.isSimilar(result)) return;
 
         if (!(event.getRecipe() instanceof Keyed key)) return;
 
         if (!key.getKey().getNamespace().equalsIgnoreCase(MetallicsPro.getPlugin().getName())) return;
 
         NamespacedKey recipeKey = key.getKey();
-        RecipeBuilder recipe = MetallicsPro.getRecipeRegistry().getFromKey(recipeKey);
-        if (recipe == null) return;
+        RecipeBuilder<?, ?> recipe = MetallicsPro.getRecipeRegistry().getFromKey(recipeKey);
+        if (!(recipe instanceof CraftBuilder craft)) return;
 
+        // Return items if it should
         ItemStack[] items = event.getInventory().getMatrix();
         for (int slot = 0; slot < items.length; slot++) {
 
             ItemStack itemStack = items[slot];
             if (itemStack == null || itemStack.getType() == Material.AIR) continue;
 
-            if (recipe.shouldReturn(itemStack)) returnItem(itemStack.clone(), slot, event, recipe);
+            if (craft.shouldReturn(itemStack)) returnItem(itemStack.clone(), slot, event, craft);
         }
 
-        CustomItem customItem = recipe.getRandomResult();
-        if (customItem != null) {
-            event.getInventory().setResult(customItem.getItemStack());
-        }
+        // Give a random result if should
+        ItemStack randomResult = recipe.getRandomResult();
+        if (randomResult != null) event.getInventory().setResult(randomResult);
     }
 
-    private int maxCraft(ItemStack[] items, RecipeBuilder recipe) {
+    private int maxCraft(ItemStack[] items, CraftBuilder recipe) {
         int lowest = Integer.MAX_VALUE;
 
         for (ItemStack itemStack : items) {
@@ -59,7 +62,7 @@ public class CraftListener implements Listener {
         return lowest;
     }
 
-    private void returnItem(ItemStack toReturn, int slot, CraftItemEvent event, RecipeBuilder recipe) {
+    private void returnItem(ItemStack toReturn, int slot, CraftItemEvent event, CraftBuilder recipe) {
         ItemStack returnItem = toReturn.clone();
 
         int amount = event.getClick().isShiftClick() ?

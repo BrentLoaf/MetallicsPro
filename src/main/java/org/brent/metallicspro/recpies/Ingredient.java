@@ -6,60 +6,51 @@ import org.jetbrains.annotations.Nullable;
 
 public class Ingredient {
 
-    private final Material material;
-    private final ItemStack itemStack;
-    private int amount = 1;
-    private boolean consume = true;
+    private ItemStack ingredientItem = null;
+    private Material ingredientMaterial = null;
 
-    public Ingredient(Material material) {
-        this.material = material;
-        this.itemStack = null;
+    private int count = 1;
+    private boolean keep = false;
+
+    private Ingredient(ItemStack ingredientItem) {
+        this.ingredientItem = ingredientItem;
     }
 
-    public Ingredient(ItemStack itemStack) {
-        this.material = null;
-        this.itemStack = itemStack;
+    private Ingredient(Material ingredientMaterial) {
+        this.ingredientMaterial = ingredientMaterial;
     }
 
-    public Ingredient(Material material, int amount) {
-        this.material = material;
-        this.itemStack = null;
-        this.amount = amount;
+    public static Ingredient of(ItemStack ingredientItem) {
+        return new Ingredient(ingredientItem);
     }
 
-    public Ingredient(ItemStack itemStack, int amount) {
-        this.material = null;
-        this.itemStack = itemStack;
-        this.amount = amount;
+    public static Ingredient of(Material ingredientMaterial) {
+        return new Ingredient(ingredientMaterial);
     }
 
-    public Ingredient(Material material, int amount, boolean consume) {
-        this.material = material;
-        this.itemStack = null;
-        this.amount = amount;
-        this.consume = consume;
-    }
-
-    public Ingredient(ItemStack itemStack, int amount, boolean consume) {
-        this.material = null;
-        this.itemStack = itemStack;
-        this.amount = amount;
-        this.consume = consume;
+    public @Nullable ItemStack getItem() {
+        return ingredientItem;
     }
 
     public @Nullable Material getMaterial() {
-        return material;
+        return ingredientMaterial;
     }
 
-    public @Nullable ItemStack getItemStack() {
-        return itemStack;
+    public Ingredient setCount(int count) {
+        this.count = count;
+        return this;
     }
 
-    public int getAmount() {
-        return amount;
+    public int getCount() {
+        return count;
     }
 
-    public boolean willConsume() {
-        return consume;
+    public Ingredient setWillKeep(boolean keep) {
+        this.keep = keep;
+        return this;
+    }
+
+    public boolean willKeep() {
+        return keep;
     }
 }

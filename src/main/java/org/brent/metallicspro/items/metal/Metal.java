@@ -1,12 +1,11 @@
 package org.brent.metallicspro.items.metal;
 
 import org.brent.metallicspro.items.CustomItem;
-import org.brent.metallicspro.items.Rarity;
 import org.brent.metallicspro.items.utility.MortarAndPestle;
 import org.brent.metallicspro.recpies.Ingredient;
-import org.brent.metallicspro.recpies.RecipeBuilder;
-import org.brent.metallicspro.recpies.Result;
+import org.brent.metallicspro.recpies.types.CraftBuilder;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemRarity;
 
 public abstract class Metal {
 
@@ -15,50 +14,52 @@ public abstract class Metal {
     protected final Powder powder;
     protected final SmallPowder smallPowder;
 
-    public Metal(String name, Rarity rarity) {
+    public Metal(String name, ItemRarity rarity) {
         this.nugget = new Nugget(name, rarity);
         this.ingot = new Ingot(name, rarity);
         this.powder = new Powder(name, rarity);
         this.smallPowder = new SmallPowder(name, rarity);
 
         ingot.addRecipeBuilder(
-                new RecipeBuilder(RecipeBuilder.Type.SHAPED_CRAFTING, new Result(ingot.getItemStack(), 1, ingot.getRawName()))
+                new CraftBuilder(CraftBuilder.Type.SHAPED, ingot.getItemStack(), ingot.getRawName())
                         .setShape(
                                 "NNN",
                                 "NNN",
                                 "NNN"
                         )
-                        .addIngredient('N', new Ingredient(nugget.getItemStack()))
+                        .addIngredient('N', Ingredient.of(nugget.getItemStack()))
         );
 
         nugget.addRecipeBuilder(
-                new RecipeBuilder(RecipeBuilder.Type.SHAPELESS_CRAFTING, new Result(nugget.getItemStack(), 9, nugget.getRawName()))
-                        .addIngredient(new Ingredient(ingot.getItemStack()))
+                new CraftBuilder(CraftBuilder.Type.SHAPELESS, nugget.getItemStack(), nugget.getRawName())
+                        .addIngredient(Ingredient.of(ingot.getItemStack()))
         );
 
         powder.addRecipeBuilder(
-                new RecipeBuilder(RecipeBuilder.Type.SHAPELESS_CRAFTING, new Result(powder.getItemStack(), 1, powder.getRawName()))
-                        .addIngredient(new Ingredient(ingot.getItemStack()))
-                        .addIngredient(new Ingredient(new MortarAndPestle().getItemStack(), 1, false))
+                new CraftBuilder(CraftBuilder.Type.SHAPELESS, powder.getItemStack(), powder.getRawName() + "_via_ingot_mortar")
+                        .addIngredient(Ingredient.of(ingot.getItemStack()))
+                        .addIngredient(Ingredient.of(new MortarAndPestle().getItemStack()).setWillKeep(true))
         );
+
         powder.addRecipeBuilder(
-                new RecipeBuilder(RecipeBuilder.Type.SHAPED_CRAFTING, new Result(powder.getItemStack(), 1, powder.getRawName()))
+                new CraftBuilder(CraftBuilder.Type.SHAPED, powder.getItemStack(), powder.getRawName() + "_via_small_pile")
                         .setShape(
                                 "SSS",
                                 "SSS",
                                 "SSS"
                         )
-                        .addIngredient('S', new Ingredient(smallPowder.getItemStack()))
+                        .addIngredient('S', Ingredient.of(smallPowder.getItemStack()))
         );
 
         smallPowder.addRecipeBuilder(
-                new RecipeBuilder(RecipeBuilder.Type.SHAPELESS_CRAFTING, new Result(smallPowder.getItemStack(), 9, smallPowder.getRawName()))
-                        .addIngredient(new Ingredient(powder.getItemStack()))
+                new CraftBuilder(CraftBuilder.Type.SHAPELESS, smallPowder.getItemStack(), smallPowder.getRawName() + "_via_powder")
+                        .addIngredient(Ingredient.of(powder.getItemStack()))
         );
+
         smallPowder.addRecipeBuilder(
-                new RecipeBuilder(RecipeBuilder.Type.SHAPELESS_CRAFTING, new Result(smallPowder.getItemStack(), 1, smallPowder.getRawName()))
-                        .addIngredient(new Ingredient(nugget.getItemStack()))
-                        .addIngredient(new Ingredient(new MortarAndPestle().getItemStack(), 1, false))
+                new CraftBuilder(CraftBuilder.Type.SHAPELESS, smallPowder.getItemStack(), smallPowder.getRawName() + "_via_nugget_mortar")
+                        .addIngredient(Ingredient.of(nugget.getItemStack()))
+                        .addIngredient(Ingredient.of(new MortarAndPestle().getItemStack()).setWillKeep(true))
         );
     }
 
@@ -80,28 +81,28 @@ public abstract class Metal {
 
     public class Nugget extends CustomItem {
 
-        public Nugget(String name, Rarity rarity) {
+        public Nugget(String name, ItemRarity rarity) {
             super(name + " Nugget", Material.IRON_NUGGET, rarity);
         }
     }
 
     public class Ingot extends CustomItem {
 
-        public Ingot(String name, Rarity rarity) {
+        public Ingot(String name, ItemRarity rarity) {
             super(name + " Ingot", Material.IRON_INGOT, rarity);
         }
     }
 
     public class Powder extends CustomItem {
 
-        public Powder(String name, Rarity rarity) {
+        public Powder(String name, ItemRarity rarity) {
             super(name + " Powder Pile", Material.SUGAR, rarity);
         }
     }
 
     public class SmallPowder extends CustomItem {
 
-        public SmallPowder(String name, Rarity rarity) {
+        public SmallPowder(String name, ItemRarity rarity) {
             super("Small " + name + " Powder Pile", Material.SUGAR, rarity);
         }
     }

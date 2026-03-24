@@ -1,20 +1,19 @@
 package org.brent.metallicspro.items.utility;
 
 import org.brent.metallicspro.items.CustomItem;
-import org.brent.metallicspro.items.Rarity;
 import org.brent.metallicspro.recpies.Ingredient;
-import org.brent.metallicspro.recpies.RecipeBuilder;
-import org.brent.metallicspro.recpies.Result;
+import org.brent.metallicspro.recpies.types.CraftBuilder;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemRarity;
 
 public class MortarAndPestle extends CustomItem {
 
     public MortarAndPestle() {
-        super("Mortar and Pestle", Material.FLOWER_POT, Rarity.COMMON);
+        super("Mortar and Pestle", Material.FLOWER_POT, ItemRarity.COMMON);
 
         addRecipeBuilder(
-                new RecipeBuilder(RecipeBuilder.Type.SHAPELESS_CRAFTING, new Result(getItemStack(), 1, getRawName()))
-                        .addIngredient(new Ingredient(Material.BRICK, 3))
+                new CraftBuilder(CraftBuilder.Type.SHAPELESS, getItemStack(), getRawName())
+                        .addIngredient(Ingredient.of(Material.BRICK).setCount(3))
         );
     }
 }
