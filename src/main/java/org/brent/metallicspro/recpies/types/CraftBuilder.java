@@ -105,13 +105,7 @@ public class CraftBuilder extends RecipeBuilder<CraftBuilder, CraftingRecipe> {
                 List<Ingredient> ingredients = builder.getShapelessIngredients();
                 for (Ingredient ingredient : ingredients) {
                     int count = ingredient.getCount();
-
-                    Material material = ingredient.getMaterial();
-                    if (material != null) {
-                        recipe.addIngredient(count, material);
-                    } else {
-                        recipe.addIngredient(count, ingredient.getItem());
-                    }
+                    recipe.addIngredient(ingredient.getChoice());
                 }
 
                 return recipe;
@@ -127,13 +121,7 @@ public class CraftBuilder extends RecipeBuilder<CraftBuilder, CraftingRecipe> {
                 Map<Character, Ingredient> ingredients = builder.getShapedIngredients();
                 for (Character character : ingredients.keySet()) {
                     Ingredient ingredient = ingredients.get(character);
-
-                    Material material = ingredient.getMaterial();
-                    if (material != null) {
-                        recipe.setIngredient(character, material);
-                    } else {
-                        recipe.setIngredient(character, ingredient.getItem());
-                    }
+                    recipe.setIngredient(character, ingredient.getChoice());
                 }
 
                 return recipe;

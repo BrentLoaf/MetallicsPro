@@ -46,8 +46,10 @@ public class CraftListener implements Listener {
         }
 
         // Give a random result if should
-        ItemStack randomResult = recipe.getRandomResult();
-        if (randomResult != null) event.getInventory().setResult(randomResult);
+        ItemStack finalResult = recipe.getRandomResult() == null ?
+                recipe.useResultEditor(result, event.getInventory().getMatrix()) :
+                recipe.getRandomResult();
+        event.getInventory().setResult(finalResult);
     }
 
     private int maxCraft(ItemStack[] items, CraftBuilder recipe) {
@@ -73,12 +75,15 @@ public class CraftListener implements Listener {
         returnItem.setAmount(amount);
 
         int slotIndex = slot + 1;
-
         event.getInventory().setItem(slotIndex, returnItem);
 
         Bukkit.getScheduler().runTask(MetallicsPro.getPlugin(), () -> {
             Ingredient ingredient = recipe.getIngredient(returnItem);
-            event.getInventory().setItem(slotIndex, ingredient.useEditor(returnItem, event.getInventory().getMatrix()));
+            ItemStack returns = ingredient.useEditor(returnItem, event.getInventory().getMatrix());
+
+            returns.setAmount(1);
+
+            event.getInventory().setItem(slotIndex, returns);
         });
     }
 

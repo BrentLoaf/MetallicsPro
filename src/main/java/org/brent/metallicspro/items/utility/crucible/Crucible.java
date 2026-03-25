@@ -10,13 +10,12 @@ import org.brent.metallicspro.recpies.types.CraftBuilder;
 import org.brent.metallicspro.recpies.types.FurnaceBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemRarity;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataType;
-import org.jetbrains.annotations.Nullable;
+import org.bukkit.inventory.meta.Damageable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class Crucible implements CustomItemBuilder {
@@ -24,11 +23,11 @@ public abstract class Crucible implements CustomItemBuilder {
     protected final UnfiredCrucible unfired;
     protected final FiredCrucible fired;
 
-    protected final int firedDurability;
+    protected int maxDamage = 16;
 
     public Crucible(String unfiredName, String firedName, ItemRarity rarity, Material... craftings) {
         unfired = new UnfiredCrucible(unfiredName, rarity);
-        fired = new FiredCrucible(firedName, rarity, firedDurability);
+        fired = new FiredCrucible(firedName, rarity);
 
         for (Material material : craftings) {
             unfired.addRecipeBuilder(
@@ -65,23 +64,16 @@ public abstract class Crucible implements CustomItemBuilder {
 
     public class FiredCrucible extends CustomItem {
 
-        private static @Nullable NamespacedKey typeKey = null;
-        private static @Nullable NamespacedKey isMolten = null;
-
-        public FiredCrucible(String name, ItemRarity rarity, int firedDurability) {
+        public FiredCrucible(String name, ItemRarity rarity) {
             super(name + " Crucible", Material.BOWL, rarity);
 
             rawAppend = "empty";
             modelPath = this.name.toLowerCase().replace(' ', '_');
 
-            if (typeKey == null) typeKey =  new NamespacedKey(MetallicsPro.getPlugin(), "contents");
-            if (isMolten == null) typeKey =  new NamespacedKey(MetallicsPro.getPlugin(), "is_molten");
-
             addLore(ChatColor.RESET + "" + ChatColor.GRAY + "Contents: Empty");
 
             addMetaModifier(meta -> {
-                meta.getPersistentDataContainer().set(typeKey, PersistentDataType.STRING, "none");
-                meta.getPersistentDataContainer().set(typeKey, PersistentDataType.BOOLEAN, false);
+                ((Damageable) meta).setMaxDamage(maxDamage);
             });
         }
 
@@ -111,11 +103,43 @@ public abstract class Crucible implements CustomItemBuilder {
                         new CraftBuilder(CraftBuilder.Type.SHAPELESS, solid.getItemStack(), solid.getRawName() + "_ingot")
                                 .addIngredient(Ingredient.of(base))
                                 .addIngredient(Ingredient.of(metal.getIngot().getItemStack()))
+                                .setResultEditor((r, m) -> {
+                                    ItemStack crucible = Arrays.stream(m)
+                                            .filter(i -> i != null && i.getType() == Material.BOWL)
+                                            .findFirst()
+                                            .orElse(null);
+
+                                    Damageable crucibleDMeta = (Damageable) crucible.getItemMeta();
+                                    int damage  = crucibleDMeta.getDamage();
+
+                                    r.editMeta(meta -> {
+                                        Damageable dMeta = (Damageable) meta;
+                                        dMeta.setDamage(damage);
+                                    });
+
+                                    return r;
+                                })
                 );
                 solid.addRecipeBuilder(
                         new CraftBuilder(CraftBuilder.Type.SHAPELESS, solid.getItemStack(), solid.getRawName() + "_powder")
                                 .addIngredient(Ingredient.of(base))
                                 .addIngredient(Ingredient.of(metal.getPowder().getItemStack()))
+                                .setResultEditor((r, m) -> {
+                                    ItemStack crucible = Arrays.stream(m)
+                                            .filter(i -> i != null && i.getType() == Material.BOWL)
+                                            .findFirst()
+                                            .orElse(null);
+
+                                    Damageable crucibleDMeta = (Damageable) crucible.getItemMeta();
+                                    int damage  = crucibleDMeta.getDamage();
+
+                                    r.editMeta(meta -> {
+                                        Damageable dMeta = (Damageable) meta;
+                                        dMeta.setDamage(damage);
+                                    });
+
+                                    return r;
+                                })
                 );
 
                 molten.addRecipeBuilder(
@@ -125,7 +149,19 @@ public abstract class Crucible implements CustomItemBuilder {
                 molten.addRecipeBuilder(
                         new CraftBuilder(CraftBuilder.Type.SHAPELESS, metal.getIngot().getItemStack(), molten.getRawName() + "_solidify")
                                 .addIngredient(Ingredient.of(molten.getItemStack()).setWillKeep(true)
-                                        .setEditor((i, m) -> base))
+                                        .setEditor((i, m) -> {
+                                            Damageable crucibleDMeta = (Damageable) i.getItemMeta();
+                                            int newDamage = crucibleDMeta.getDamage() + 1;
+                                            if (newDamage >= crucibleDMeta.getMaxDamage()) return new ItemStack(Material.AIR);
+
+                                            base.editMeta(meta -> {
+                                                Damageable dMeta = (Damageable) meta;
+                                                dMeta.setDamage(newDamage);
+                                            });
+
+                                            return base;
+                                        })
+                                )
                 );
             }
 
@@ -148,8 +184,7 @@ public abstract class Crucible implements CustomItemBuilder {
                     addLore(ChatColor.RESET + "" + ChatColor.GRAY + "Contents: Molten " + metal.getName());
 
                     addMetaModifier(meta -> {
-                        meta.getPersistentDataContainer().set(typeKey, PersistentDataType.STRING, metal.getRawName());
-                        meta.getPersistentDataContainer().set(typeKey, PersistentDataType.BOOLEAN, true);
+                        ((Damageable) meta).setMaxDamage(maxDamage);
                     });
                 }
             }
@@ -165,8 +200,7 @@ public abstract class Crucible implements CustomItemBuilder {
                     addLore(ChatColor.RESET + "" + ChatColor.GRAY + "Contents: Solid " + metal.getName());
 
                     addMetaModifier(meta -> {
-                        meta.getPersistentDataContainer().set(typeKey, PersistentDataType.STRING, metal.getRawName());
-                        meta.getPersistentDataContainer().set(typeKey, PersistentDataType.BOOLEAN, false);
+                        ((Damageable) meta).setMaxDamage(maxDamage);
                     });
                 }
             }
