@@ -2,7 +2,10 @@ package org.brent.metallicspro.recpies;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.RecipeChoice;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.BiFunction;
 
 public class Ingredient {
 
@@ -11,6 +14,8 @@ public class Ingredient {
 
     private int count = 1;
     private boolean keep = false;
+
+    private BiFunction<ItemStack, ItemStack[], ItemStack> ingredientEdit = (i, m) -> i;
 
     private Ingredient(ItemStack ingredientItem) {
         this.ingredientItem = ingredientItem;
@@ -52,5 +57,23 @@ public class Ingredient {
 
     public boolean willKeep() {
         return keep;
+    }
+
+    public @Nullable RecipeChoice getChoice() {
+        if (ingredientItem != null) {
+            return new RecipeChoice.ExactChoice(ingredientItem);
+        } else if (ingredientMaterial != null) {
+            return new RecipeChoice.MaterialChoice(ingredientMaterial);
+        }
+        return null;
+    }
+
+    public Ingredient setEditor(BiFunction<ItemStack, ItemStack[], ItemStack> ingredientEdit) {
+        this.ingredientEdit = ingredientEdit;
+        return this;
+    }
+
+    public ItemStack useEditor(ItemStack item, ItemStack[] matrix) {
+        return ingredientEdit.apply(item, matrix);
     }
 }

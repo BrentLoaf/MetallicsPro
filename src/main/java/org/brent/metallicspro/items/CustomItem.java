@@ -6,15 +6,23 @@ import org.brent.metallicspro.MetallicsPro;
 import org.brent.metallicspro.recpies.types.RecipeBuilder;
 import org.bukkit.*;
 import org.bukkit.inventory.*;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public abstract class CustomItem {
 
     protected final String name;
+
+    protected String rawAppend = "";
+    protected String modelPath = "";
+
     protected final Material baseMaterial;
     protected final ItemRarity rarity;
     protected final List<RecipeBuilder<?, ?>> recipeBuilders = new ArrayList<>();
+    protected final List<Consumer<ItemMeta>> metaModifiers = new ArrayList<>();
+    protected final List<String> lore = new ArrayList<>();
 
     public CustomItem(String name, Material baseMaterial, ItemRarity rarity) {
         this.name = name;
@@ -36,9 +44,13 @@ public abstract class CustomItem {
             String type = pkg.substring(pkg.indexOf("items") + "items".length() + 1)
                     .replace('.', '/');
 
-            NamespacedKey key = new NamespacedKey("metallicspro", type + "/" + getRawName());
+            String finalPath = modelPath.isEmpty() ? getRawName() : modelPath;
+            NamespacedKey key = new NamespacedKey("metallicspro", type + "/" + finalPath);
             meta.setItemModel(key);
             keys.add(key);
+
+            metaModifiers.forEach(m -> m.accept(meta));
+            meta.setLore(lore);
         });
 
         return itemStack;
@@ -53,7 +65,13 @@ public abstract class CustomItem {
     }
 
     public String getRawName() {
-        return name.toLowerCase().replace(' ', '_');
+        String raw = name.toLowerCase().replace(' ', '_');
+
+        if (rawAppend.isEmpty()) {
+            return raw;
+        } else {
+            return raw + "_" + rawAppend;
+        }
     }
 
     public Material getBaseMaterial() {
@@ -70,5 +88,13 @@ public abstract class CustomItem {
 
     public void addRecipeBuilder(RecipeBuilder<?, ?> recipeBuilder) {
         this.recipeBuilders.add(recipeBuilder);
+    }
+
+    public void addMetaModifier(Consumer<ItemMeta> metaModifier) {
+        this.metaModifiers.add(metaModifier);
+    }
+
+    public void addLore(String... lines) {
+        this.lore.addAll(List.of(lines));
     }
 }

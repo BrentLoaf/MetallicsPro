@@ -6,7 +6,7 @@
 
   <groupId>org.brent.triggerlib</groupId>
   <artifactId>MetallicsPro</artifactId>
-  <version>1.0.088-snapshot</version>
+  <version>1.0.121-snapshot</version>
   <packaging>jar</packaging>
 
   <name>MetallicsPro</name>

@@ -2,6 +2,7 @@ package org.brent.metallicspro.listeners.recipe;
 
 import org.brent.metallicspro.MetallicsPro;
 import org.brent.metallicspro.items.CustomItem;
+import org.brent.metallicspro.recpies.Ingredient;
 import org.brent.metallicspro.recpies.types.CraftBuilder;
 import org.brent.metallicspro.recpies.types.RecipeBuilder;
 import org.bukkit.Bukkit;
@@ -74,6 +75,11 @@ public class CraftListener implements Listener {
         int slotIndex = slot + 1;
 
         event.getInventory().setItem(slotIndex, returnItem);
+
+        Bukkit.getScheduler().runTask(MetallicsPro.getPlugin(), () -> {
+            Ingredient ingredient = recipe.getIngredient(returnItem);
+            event.getInventory().setItem(slotIndex, ingredient.useEditor(returnItem, event.getInventory().getMatrix()));
+        });
     }
 
     public static void init() {

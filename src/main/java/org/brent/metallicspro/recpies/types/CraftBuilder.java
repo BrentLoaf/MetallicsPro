@@ -75,6 +75,22 @@ public class CraftBuilder extends RecipeBuilder<CraftBuilder, CraftingRecipe> {
         return false;
     }
 
+    public  @Nullable Ingredient getIngredient(ItemStack itemStack) {
+        List<Ingredient> ingredients = type == Type.SHAPELESS ?
+                shapelessIngredients :
+                shapedIngredients.values().stream().toList();
+
+        for (Ingredient ingredient : ingredients) {
+            ItemStack itemToCheck = ingredient.getMaterial() != null ?
+                    new ItemStack(ingredient.getMaterial()) :
+                    ingredient.getItem();
+
+            if (itemStack.isSimilar(itemToCheck)) return ingredient;
+        }
+
+        return null;
+    }
+
     @Override
     public @Nullable CraftingRecipe getRecipe() {
         return this.type.getRecipe(this);
