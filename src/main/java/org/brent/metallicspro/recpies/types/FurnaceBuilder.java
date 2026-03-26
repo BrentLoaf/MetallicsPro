@@ -107,8 +107,8 @@ public class FurnaceBuilder extends RecipeBuilder<FurnaceBuilder, List<CookingRe
                         builder.getKey("_blast"),
                         builder.getResult(),
                         builder.getInput().getChoice(),
-                        builder.getXp() / 2,
-                        builder.getTimeTicks()
+                        builder.getXp(),
+                        builder.getTimeTicks() / 2
                 );
             }
         },
@@ -119,8 +119,8 @@ public class FurnaceBuilder extends RecipeBuilder<FurnaceBuilder, List<CookingRe
                         builder.getKey("_smoke"),
                         builder.getResult(),
                         builder.getInput().getChoice(),
-                        builder.getXp() / 2,
-                        builder.getTimeTicks()
+                        builder.getXp() ,
+                        builder.getTimeTicks() /2
                 );
             }
         };

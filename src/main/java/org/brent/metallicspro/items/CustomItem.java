@@ -24,6 +24,8 @@ public abstract class CustomItem {
     protected final List<Consumer<ItemMeta>> metaModifiers = new ArrayList<>();
     protected final List<String> lore = new ArrayList<>();
 
+    protected ItemStack itemStack;
+
     public CustomItem(String name, Material baseMaterial, ItemRarity rarity) {
         this.name = name;
         this.baseMaterial = baseMaterial;
@@ -32,7 +34,7 @@ public abstract class CustomItem {
 
     public static final HashSet<NamespacedKey> keys = new HashSet<>(); // JUST FOR DEBUGS
 
-    public ItemStack getItemStack() {
+    private ItemStack buildItem() {
         ItemStack itemStack = new ItemStack(baseMaterial);
 
         itemStack.editMeta(meta -> {
@@ -53,6 +55,11 @@ public abstract class CustomItem {
             meta.setLore(lore);
         });
 
+        return itemStack;
+    }
+
+    public ItemStack getItemStack() {
+        if (itemStack == null) itemStack = buildItem();
         return itemStack;
     }
 

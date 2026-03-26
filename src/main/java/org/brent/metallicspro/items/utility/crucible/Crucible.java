@@ -12,10 +12,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemRarity;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public abstract class Crucible implements CustomItemBuilder {
@@ -23,7 +21,7 @@ public abstract class Crucible implements CustomItemBuilder {
     protected final UnfiredCrucible unfired;
     protected final FiredCrucible fired;
 
-    protected int maxDamage = 16;
+    protected int speedMultiplier = 1;
 
     public Crucible(String unfiredName, String firedName, ItemRarity rarity, Material... craftings) {
         unfired = new UnfiredCrucible(unfiredName, rarity);
@@ -71,10 +69,6 @@ public abstract class Crucible implements CustomItemBuilder {
             modelPath = this.name.toLowerCase().replace(' ', '_');
 
             addLore(ChatColor.RESET + "" + ChatColor.GRAY + "Contents: Empty");
-
-            addMetaModifier(meta -> {
-                ((Damageable) meta).setMaxDamage(maxDamage);
-            });
         }
 
         public List<CustomItem> getCrucibleTypes() {
@@ -103,65 +97,23 @@ public abstract class Crucible implements CustomItemBuilder {
                         new CraftBuilder(CraftBuilder.Type.SHAPELESS, solid.getItemStack(), solid.getRawName() + "_ingot")
                                 .addIngredient(Ingredient.of(base))
                                 .addIngredient(Ingredient.of(metal.getIngot().getItemStack()))
-                                .setResultEditor((r, m) -> {
-                                    ItemStack crucible = Arrays.stream(m)
-                                            .filter(i -> i != null && i.getType() == Material.BOWL)
-                                            .findFirst()
-                                            .orElse(null);
-
-                                    Damageable crucibleDMeta = (Damageable) crucible.getItemMeta();
-                                    int damage  = crucibleDMeta.getDamage();
-
-                                    r.editMeta(meta -> {
-                                        Damageable dMeta = (Damageable) meta;
-                                        dMeta.setDamage(damage);
-                                    });
-
-                                    return r;
-                                })
                 );
                 solid.addRecipeBuilder(
                         new CraftBuilder(CraftBuilder.Type.SHAPELESS, solid.getItemStack(), solid.getRawName() + "_powder")
                                 .addIngredient(Ingredient.of(base))
                                 .addIngredient(Ingredient.of(metal.getPowder().getItemStack()))
-                                .setResultEditor((r, m) -> {
-                                    ItemStack crucible = Arrays.stream(m)
-                                            .filter(i -> i != null && i.getType() == Material.BOWL)
-                                            .findFirst()
-                                            .orElse(null);
-
-                                    Damageable crucibleDMeta = (Damageable) crucible.getItemMeta();
-                                    int damage  = crucibleDMeta.getDamage();
-
-                                    r.editMeta(meta -> {
-                                        Damageable dMeta = (Damageable) meta;
-                                        dMeta.setDamage(damage);
-                                    });
-
-                                    return r;
-                                })
                 );
 
                 molten.addRecipeBuilder(
                         new FurnaceBuilder(molten.getItemStack(), Ingredient.of(solid.getItemStack()), molten.getRawName() + "_melt")
                                 .addTypes(FurnaceBuilder.Type.NORMAL, FurnaceBuilder.Type.BLAST)
+                                .setTimeTicks(Math.round(200 / speedMultiplier))
                 );
                 molten.addRecipeBuilder(
                         new CraftBuilder(CraftBuilder.Type.SHAPELESS, metal.getIngot().getItemStack(), molten.getRawName() + "_solidify")
-                                .addIngredient(Ingredient.of(molten.getItemStack()).setWillKeep(true)
-                                        .setEditor((i, m) -> {
-                                            Damageable crucibleDMeta = (Damageable) i.getItemMeta();
-                                            int newDamage = crucibleDMeta.getDamage() + 1;
-                                            if (newDamage >= crucibleDMeta.getMaxDamage()) return new ItemStack(Material.AIR);
-
-                                            base.editMeta(meta -> {
-                                                Damageable dMeta = (Damageable) meta;
-                                                dMeta.setDamage(newDamage);
-                                            });
-
-                                            return base;
-                                        })
-                                )
+                                .addIngredient(Ingredient.of(molten.getItemStack())
+                                        .setWillKeep(true)
+                                        .setEditor((i, m) -> base))
                 );
             }
 
@@ -179,12 +131,12 @@ public abstract class Crucible implements CustomItemBuilder {
                     super(name, Material.BOWL, ItemRarity.COMMON);
 
                     rawAppend = metal.getRawName() + "_molten";
-                    modelPath = name.toLowerCase().replace(' ', '_');
+                    modelPath = name.toLowerCase().replace(' ', '_') + "_hot";
 
                     addLore(ChatColor.RESET + "" + ChatColor.GRAY + "Contents: Molten " + metal.getName());
 
                     addMetaModifier(meta -> {
-                        ((Damageable) meta).setMaxDamage(maxDamage);
+                        meta.setMaxStackSize(1);
                     });
                 }
             }
@@ -195,12 +147,12 @@ public abstract class Crucible implements CustomItemBuilder {
                     super(name, Material.BOWL, ItemRarity.COMMON);
 
                     rawAppend = metal.getRawName() + "_solid";
-                    modelPath = name.toLowerCase().replace(' ', '_');
+                    modelPath = name.toLowerCase().replace(' ', '_') + "_metal";
 
                     addLore(ChatColor.RESET + "" + ChatColor.GRAY + "Contents: Solid " + metal.getName());
 
                     addMetaModifier(meta -> {
-                        ((Damageable) meta).setMaxDamage(maxDamage);
+                        meta.setMaxStackSize(1);
                     });
                 }
             }

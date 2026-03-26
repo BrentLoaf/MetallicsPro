@@ -75,7 +75,7 @@ public class CraftBuilder extends RecipeBuilder<CraftBuilder, CraftingRecipe> {
         return false;
     }
 
-    public  @Nullable Ingredient getIngredient(ItemStack itemStack) {
+    public @Nullable Ingredient getIngredient(ItemStack itemStack) {
         List<Ingredient> ingredients = type == Type.SHAPELESS ?
                 shapelessIngredients :
                 shapedIngredients.values().stream().toList();
@@ -104,8 +104,9 @@ public class CraftBuilder extends RecipeBuilder<CraftBuilder, CraftingRecipe> {
 
                 List<Ingredient> ingredients = builder.getShapelessIngredients();
                 for (Ingredient ingredient : ingredients) {
-                    int count = ingredient.getCount();
-                    recipe.addIngredient(ingredient.getChoice());
+                    for (int i = 0; i < ingredient.getCount(); i++) {
+                        recipe.addIngredient(ingredient.getChoice());
+                    }
                 }
 
                 return recipe;

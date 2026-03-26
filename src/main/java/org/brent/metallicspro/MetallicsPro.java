@@ -1,5 +1,7 @@
 package org.brent.metallicspro;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.brent.metallicspro.items.CustomItem;
 import org.brent.metallicspro.items.ItemRegistry;
 import org.brent.metallicspro.items.metal.MetalRegistry;
@@ -10,8 +12,17 @@ import org.brent.metallicspro.blocks.ore.OreBlockRegistry;
 
 import org.brent.metallicspro.recpies.RecipeRegistry;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.FurnaceRecipe;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.RecipeChoice;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.UUID;
 
 public final class MetallicsPro extends JavaPlugin {
 

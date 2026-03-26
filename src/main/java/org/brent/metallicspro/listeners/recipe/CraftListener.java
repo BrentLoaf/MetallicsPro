@@ -52,19 +52,6 @@ public class CraftListener implements Listener {
         event.getInventory().setResult(finalResult);
     }
 
-    private int maxCraft(ItemStack[] items, CraftBuilder recipe) {
-        int lowest = Integer.MAX_VALUE;
-
-        for (ItemStack itemStack : items) {
-            if (itemStack == null || itemStack.getType() == Material.AIR) continue;
-            if (recipe.shouldReturn(itemStack)) continue;
-
-            lowest = Math.min(lowest, itemStack.getAmount());
-        }
-
-        return lowest;
-    }
-
     private void returnItem(ItemStack toReturn, int slot, CraftItemEvent event, CraftBuilder recipe) {
         ItemStack returnItem = toReturn.clone();
 
@@ -77,14 +64,27 @@ public class CraftListener implements Listener {
         int slotIndex = slot + 1;
         event.getInventory().setItem(slotIndex, returnItem);
 
-        Bukkit.getScheduler().runTask(MetallicsPro.getPlugin(), () -> {
-            Ingredient ingredient = recipe.getIngredient(returnItem);
+        Bukkit.getScheduler().runTaskLater(MetallicsPro.getPlugin(), () -> {
+            Ingredient ingredient = recipe.getIngredient(toReturn);
+            if (ingredient == null) return;
+
             ItemStack returns = ingredient.useEditor(returnItem, event.getInventory().getMatrix());
 
-            returns.setAmount(1);
-
             event.getInventory().setItem(slotIndex, returns);
-        });
+        }, 1L);
+    }
+
+    private int maxCraft(ItemStack[] items, CraftBuilder recipe) {
+        int lowest = Integer.MAX_VALUE;
+
+        for (ItemStack itemStack : items) {
+            if (itemStack == null || itemStack.getType() == Material.AIR) continue;
+            if (recipe.shouldReturn(itemStack)) continue;
+
+            lowest = Math.min(lowest, itemStack.getAmount());
+        }
+
+        return lowest;
     }
 
     public static void init() {
