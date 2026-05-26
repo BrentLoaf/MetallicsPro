@@ -96,6 +96,7 @@ public abstract class Metal {
 
         public Nugget(String name, ItemRarity rarity) {
             super(name + " Nugget", Material.IRON_NUGGET, rarity);
+            sectionAdd = name.toLowerCase();
         }
     }
 
@@ -103,6 +104,7 @@ public abstract class Metal {
 
         public Ingot(String name, ItemRarity rarity) {
             super(name + " Ingot", Material.IRON_INGOT, rarity);
+            sectionAdd = name.toLowerCase();
         }
     }
 
@@ -110,6 +112,7 @@ public abstract class Metal {
 
         public Powder(String name, ItemRarity rarity) {
             super(name + " Powder Pile", Material.SUGAR, rarity);
+            sectionAdd = name.toLowerCase();
         }
     }
 
@@ -117,6 +120,7 @@ public abstract class Metal {
 
         public SmallPowder(String name, ItemRarity rarity) {
             super("Small " + name + " Powder Pile", Material.SUGAR, rarity);
+            sectionAdd = name.toLowerCase();
         }
     }
 }

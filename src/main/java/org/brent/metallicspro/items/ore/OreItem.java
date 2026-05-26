@@ -9,6 +9,7 @@ import org.brent.metallicspro.items.utility.MortarAndPestle;
 import org.brent.metallicspro.items.utility.Sieve;
 import org.brent.metallicspro.recpies.Ingredient;
 import org.brent.metallicspro.recpies.types.CraftBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemRarity;
@@ -18,12 +19,19 @@ public abstract class OreItem {
 
     protected final RawOre rawOre;
     protected final CrushedOre crushedOre;
+    protected final BlockOfOre blockOfOre;
 
     protected CraftBuilder usageRecipe;
 
-    public OreItem(String name, Material baseMaterial, ItemRarity rarity, String key) {
+    public OreItem(String name, Material baseMaterial, Material blockOre, ItemRarity rarity, String key) {
         this.rawOre = new RawOre(name, baseMaterial, rarity);
         this.crushedOre = new CrushedOre(name, rarity);
+        this.blockOfOre = new BlockOfOre(name, blockOre, rarity);
+
+        rawOre.addRecipeBuilder(
+                new CraftBuilder(CraftBuilder.Type.SHAPELESS, rawOre.getItemStack(), rawOre.getRawName())
+                        .setAmount(9)
+                        .addIngredient(Ingredient.of(blockOfOre.getItemStack())));
 
         crushedOre.addRecipeBuilder(
                 new CraftBuilder(CraftBuilder.Type.SHAPELESS, crushedOre.getItemStack(), crushedOre.getRawName())
@@ -31,9 +39,18 @@ public abstract class OreItem {
                         .addIngredient(Ingredient.of(new MortarAndPestle().getItemStack()).setWillKeep(true))
         );
 
-        usageRecipe = new CraftBuilder(CraftBuilder.Type.SHAPELESS, getDefaultItem(), key)
+        usageRecipe = new CraftBuilder(CraftBuilder.Type.SHAPELESS, getDefaultItem(), key + "_process")
                 .addIngredient(Ingredient.of(new Sieve().getItemStack()).setWillKeep(true))
                 .addIngredient(Ingredient.of(crushedOre.getItemStack()));
+
+        blockOfOre.addRecipeBuilder(
+                new CraftBuilder(CraftBuilder.Type.SHAPED, blockOfOre.getItemStack(), blockOfOre.getRawName())
+                        .setShape(
+                                "ooo",
+                                "ooo",
+                                "ooo"
+                        )
+                        .addIngredient('o', Ingredient.of(rawOre.getItemStack())));
     }
 
     public void addMetal(Metal metal, int weight) {
@@ -41,6 +58,7 @@ public abstract class OreItem {
     }
 
     public void init() {
+        Bukkit.getLogger().info("[MetalicsPro] Init started for " + usageRecipe.getKey().toString());
         MetallicsPro.getRecipeRegistry().add(usageRecipe);
     }
 
@@ -50,6 +68,10 @@ public abstract class OreItem {
 
     public CrushedOre getCrushedOre() {
         return crushedOre;
+    }
+
+    public BlockOfOre getRawOreBlock() {
+        return blockOfOre;
     }
 
     public CraftBuilder getUsageRecipe() {
@@ -82,6 +104,15 @@ public abstract class OreItem {
 
         public CrushedOre(String name, ItemRarity rarity) {
             super(name + " Crushed Ore", Material.SUGAR, rarity);
+        }
+    }
+
+    public class BlockOfOre extends CustomItem {
+
+        public BlockOfOre(String name, Material material, ItemRarity rarity) {
+            super(name + " Ore Block", material, rarity);
+
+            modelPath = "";
         }
     }
 }

@@ -16,7 +16,8 @@ public abstract class CustomItem {
     protected final String name;
 
     protected String rawAppend = "";
-    protected String modelPath = "";
+    protected String modelPath = null;
+    protected String sectionAdd = "";
 
     protected final Material baseMaterial;
     protected final ItemRarity rarity;
@@ -46,10 +47,21 @@ public abstract class CustomItem {
             String type = pkg.substring(pkg.indexOf("items") + "items".length() + 1)
                     .replace('.', '/');
 
-            String finalPath = modelPath.isEmpty() ? getRawName() : modelPath;
-            NamespacedKey key = new NamespacedKey("metallicspro", type + "/" + finalPath);
-            meta.setItemModel(key);
-            keys.add(key);
+            String finalPath = null;
+
+            if (modelPath == null) {
+                finalPath = getRawName();
+            } else if (!modelPath.isEmpty()) {
+                finalPath = modelPath;
+            }
+
+            if (finalPath != null) {
+                String toSectionAdd = sectionAdd.isBlank() ? "" : sectionAdd + "/";
+
+                NamespacedKey key = new NamespacedKey("metallicspro", type + "/" + toSectionAdd + finalPath);
+                meta.setItemModel(key);
+                keys.add(key);
+            }
 
             metaModifiers.forEach(m -> m.accept(meta));
             meta.setLore(lore);

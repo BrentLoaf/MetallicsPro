@@ -8,6 +8,7 @@ import org.bukkit.inventory.Recipe;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.function.BiFunction;
@@ -40,6 +41,10 @@ public abstract class RecipeBuilder<T extends RecipeBuilder, R> {
     public ItemStack getResult() {
         result.setAmount(amount);
         return result;
+    }
+
+    public List<ItemStack> getAllPossibleResults() {
+        return randomResult.keySet().stream().toList();
     }
 
     public ItemStack useResultEditor(ItemStack result, ItemStack[] items) {

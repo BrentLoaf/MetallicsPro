@@ -71,7 +71,7 @@ public class OreBreakRegister implements Listener {
         HashSet<OreBlock> oreBlocks = MetallicsPro.getOreBlockRegistry().getOreBlocks();
 
         for (OreBlock oreBlock : oreBlocks) {
-            if (block.getType() != oreBlock.getReplacedBlock()) continue;
+            if (!oreBlock.getReplacedBlocks().containsKey(block.getType())) continue;
             return oreBlock;
         }
 

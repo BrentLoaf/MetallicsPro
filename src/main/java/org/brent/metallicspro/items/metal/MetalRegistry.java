@@ -21,6 +21,8 @@ public class MetalRegistry {
         add(new Copper(), itemRegistry);
         add(new Zinc(), itemRegistry);
         add(new Iron(), itemRegistry);
+        add(new Tin(), itemRegistry);
+        add(new Aluminum(), itemRegistry);
     }
 
     private void add(Metal metal, ItemRegistry registry) {
@@ -30,8 +32,6 @@ public class MetalRegistry {
         registry.add(metal.getIngot());
         registry.add(metal.getPowder());
         registry.add(metal.getSmallPowder());
-
-        // metal.init();
     }
 
     private void add(OreItem oreItem, ItemRegistry registry) {
@@ -39,6 +39,7 @@ public class MetalRegistry {
 
         registry.add(oreItem.getRawOre());
         registry.add(oreItem.getCrushedOre());
+        registry.add(oreItem.getRawOreBlock());
 
         oreItem.init();
     }

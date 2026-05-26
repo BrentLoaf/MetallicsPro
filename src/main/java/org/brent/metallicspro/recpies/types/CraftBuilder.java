@@ -1,7 +1,6 @@
 package org.brent.metallicspro.recpies.types;
 
 import org.brent.metallicspro.recpies.Ingredient;
-import org.bukkit.Material;
 import org.bukkit.inventory.*;
 import org.jetbrains.annotations.Nullable;
 
