@@ -7,33 +7,33 @@ import org.brent.metallicspro.recpies.types.RecipeBuilder;
 import org.bukkit.*;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.util.*;
 import java.util.function.Consumer;
 
-public abstract class CustomItem {
+public class CustomItem {
 
     protected final String name;
+    protected final Material baseMaterial;
+
+    protected ItemRarity rarity = ItemRarity.COMMON;
+    protected List<RecipeBuilder<?, ?>> recipeBuilders = new ArrayList<>();
+    protected List<Consumer<ItemMeta>> metaModifiers = new ArrayList<>();
+    protected List<String> lore = new ArrayList<>();
 
     protected String rawAppend = "";
     protected String modelPath = null;
     protected String sectionAdd = "";
-
-    protected final Material baseMaterial;
-    protected final ItemRarity rarity;
-    protected final List<RecipeBuilder<?, ?>> recipeBuilders = new ArrayList<>();
-    protected final List<Consumer<ItemMeta>> metaModifiers = new ArrayList<>();
-    protected final List<String> lore = new ArrayList<>();
+    protected boolean handleTextures = true;
 
     protected ItemStack itemStack;
 
-    public CustomItem(String name, Material baseMaterial, ItemRarity rarity) {
+    public CustomItem(String name, Material baseMaterial) {
         this.name = name;
         this.baseMaterial = baseMaterial;
-        this.rarity = rarity;
     }
-
-    public static final HashSet<NamespacedKey> keys = new HashSet<>(); // JUST FOR DEBUGS
 
     private ItemStack buildItem() {
         ItemStack itemStack = new ItemStack(baseMaterial);
@@ -43,24 +43,9 @@ public abstract class CustomItem {
                     .decoration(TextDecoration.ITALIC, false));
             meta.setRarity(rarity);
 
-            String pkg = this.getClass().getPackageName();
-            String type = pkg.substring(pkg.indexOf("items") + "items".length() + 1)
-                    .replace('.', '/');
-
-            String finalPath = null;
-
-            if (modelPath == null) {
-                finalPath = getRawName();
-            } else if (!modelPath.isEmpty()) {
-                finalPath = modelPath;
-            }
-
-            if (finalPath != null) {
-                String toSectionAdd = sectionAdd.isBlank() ? "" : sectionAdd + "/";
-
-                NamespacedKey key = new NamespacedKey("metallicspro", type + "/" + toSectionAdd + finalPath);
-                meta.setItemModel(key);
-                keys.add(key);
+            NamespacedKey modelKey = getModelKey();
+            if (modelKey != null) {
+                meta.setItemModel(modelKey);
             }
 
             metaModifiers.forEach(m -> m.accept(meta));
@@ -75,8 +60,37 @@ public abstract class CustomItem {
         return itemStack;
     }
 
+    @Nullable
+    public NamespacedKey getModelKey() {
+        String finalPath;
+
+        if (modelPath == null) {
+            finalPath = getRawName();
+        } else if (!modelPath.isEmpty()) {
+            finalPath = modelPath;
+        } else {
+            finalPath = null;
+        }
+
+        if (finalPath == null) return null;
+
+        String section = sectionAdd == null || sectionAdd.isBlank()
+                ? ""
+                : sectionAdd + "/";
+
+        return new NamespacedKey(
+                "metallicspro",
+                section + finalPath
+        );
+    }
+
     public void init(ItemRegistry registry) {
-        for (RecipeBuilder<?, ?> recipe : recipeBuilders) MetallicsPro.getRecipeRegistry().add(recipe);
+        for (RecipeBuilder<?, ?> recipe : recipeBuilders) {
+            if (recipe.getResult() == null) recipe.setResult(getItemStack());
+            if (recipe.getKeyString() == null) recipe.setKey(getRawName());
+
+            MetallicsPro.getRecipeRegistry().add(recipe);
+        }
     }
 
     public String getName() {
@@ -105,15 +119,60 @@ public abstract class CustomItem {
         return recipeBuilders;
     }
 
-    public void addRecipeBuilder(RecipeBuilder<?, ?> recipeBuilder) {
+    public boolean shouldHandleTextures() {
+        return handleTextures;
+    }
+
+    public CustomItem addRecipeBuilder(RecipeBuilder<?, ?> recipeBuilder) {
         this.recipeBuilders.add(recipeBuilder);
+        return this;
     }
 
-    public void addMetaModifier(Consumer<ItemMeta> metaModifier) {
+    public CustomItem addMetaModifier(Consumer<ItemMeta> metaModifier) {
         this.metaModifiers.add(metaModifier);
+        return this;
     }
 
-    public void addLore(String... lines) {
+    public CustomItem addLore(String... lines) {
         this.lore.addAll(List.of(lines));
+        return this;
+    }
+
+    public CustomItem setRawAppend(String rawAppend) {
+        this.rawAppend = rawAppend;
+        return this;
+    }
+
+    @Nullable
+    public CustomItem setModelPath(String modelPath) {
+        this.modelPath = modelPath;
+        return this;
+    }
+
+    public CustomItem setSectionAdd(String sectionAdd) {
+        this.sectionAdd = sectionAdd;
+        return this;
+    }
+
+    public CustomItem setHandleTextures(boolean handleTextures) {
+        this.handleTextures = handleTextures;
+        return this;
+    }
+
+    public CustomItem setItemRarity(ItemRarity rarity) {
+        this.rarity = rarity;
+        return this;
+    }
+
+    public void resolve() {
+        recipeBuilders.stream().forEach(r -> r.resolve());
+    }
+
+    public static File getItemJson(File texturepack) {
+        return new File(texturepack, "assets/metallicspro/items/%EXAMPLE%.json");
+    }
+
+    public static File getModelJson(File texturepack) {
+        return new File(texturepack, "assets/metallicspro/models/%EXAMPLE%.json");
     }
 }

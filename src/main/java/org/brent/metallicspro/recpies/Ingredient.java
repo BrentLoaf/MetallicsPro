@@ -1,5 +1,6 @@
 package org.brent.metallicspro.recpies;
 
+import org.brent.metallicspro.materials.MaterialReference;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.RecipeChoice;
@@ -9,8 +10,11 @@ import java.util.function.BiFunction;
 
 public class Ingredient {
 
+    private RecipeChoice choice = null;
+
     private ItemStack ingredientItem = null;
     private Material ingredientMaterial = null;
+    private MaterialReference ingredientReference = null;
 
     private int count = 1;
     private boolean keep = false;
@@ -25,12 +29,28 @@ public class Ingredient {
         this.ingredientMaterial = ingredientMaterial;
     }
 
+    private Ingredient(MaterialReference ingredientReference) {
+        this.ingredientReference = ingredientReference;
+    }
+
+    private Ingredient(RecipeChoice choice) {
+        this.choice = choice;
+    }
+
     public static Ingredient of(ItemStack ingredientItem) {
         return new Ingredient(ingredientItem);
     }
 
     public static Ingredient of(Material ingredientMaterial) {
         return new Ingredient(ingredientMaterial);
+    }
+
+    public static Ingredient of(MaterialReference reference) {
+        return new Ingredient(reference);
+    }
+
+    public static Ingredient of(RecipeChoice choice) {
+        return new Ingredient(choice);
     }
 
     public @Nullable ItemStack getItem() {
@@ -59,12 +79,16 @@ public class Ingredient {
         return keep;
     }
 
-    public @Nullable RecipeChoice getChoice() {
-        if (ingredientItem != null) {
+    @Nullable
+    public RecipeChoice getChoice() {
+        if (choice != null) {
+            return choice;
+        } else if (ingredientItem != null) {
             return new RecipeChoice.ExactChoice(ingredientItem);
         } else if (ingredientMaterial != null) {
             return new RecipeChoice.MaterialChoice(ingredientMaterial);
         }
+
         return null;
     }
 
@@ -75,5 +99,10 @@ public class Ingredient {
 
     public ItemStack useEditor(ItemStack item, ItemStack[] matrix) {
         return ingredientEdit.apply(item, matrix);
+    }
+
+    public void resolve() {
+        if (ingredientReference == null) return;
+        this.ingredientItem = ingredientReference.resolve().getItemStack();
     }
 }

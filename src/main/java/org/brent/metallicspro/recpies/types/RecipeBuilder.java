@@ -15,10 +15,12 @@ import java.util.function.BiFunction;
 
 public abstract class RecipeBuilder<T extends RecipeBuilder, R> {
 
-    protected final String key;
-    protected String keyAdd;
+    @Nullable
+    protected String key;
+    protected String keyAdd = "";
 
-    protected final ItemStack result;
+    @Nullable
+    protected ItemStack result;
     protected int amount = 1;
 
     protected BiFunction<ItemStack, ItemStack[], ItemStack> resultEditor = (r, i) -> r;
@@ -26,8 +28,18 @@ public abstract class RecipeBuilder<T extends RecipeBuilder, R> {
     protected Map<ItemStack, Integer> randomResult = new HashMap<>();
 
     public RecipeBuilder(ItemStack result, String key) {
-        this.result = result;
         this.key = key;
+        this.result = result;
+    }
+
+    public RecipeBuilder(String key) {
+        this.key = key;
+    }
+
+    public RecipeBuilder() {}
+
+    public String getKeyString() {
+        return key;
     }
 
     public NamespacedKey getKey() {
@@ -39,7 +51,7 @@ public abstract class RecipeBuilder<T extends RecipeBuilder, R> {
     }
 
     public ItemStack getResult() {
-        result.setAmount(amount);
+        if (result != null) result.setAmount(amount);
         return result;
     }
 
@@ -58,6 +70,21 @@ public abstract class RecipeBuilder<T extends RecipeBuilder, R> {
 
     public T setAmount(int amount) {
         this.amount = amount;
+        return (T) this;
+    }
+
+    public T setResult(ItemStack result) {
+        this.result = result;
+        return (T) this;
+    }
+
+    public T setKey(String key) {
+        this.key = key;
+        return (T) this;
+    }
+
+    public T setKeyAdd(String keyAdd) {
+        this.keyAdd = keyAdd;
         return (T) this;
     }
 
@@ -110,4 +137,6 @@ public abstract class RecipeBuilder<T extends RecipeBuilder, R> {
 
         return null;
     }
+
+    public abstract void resolve();
 }

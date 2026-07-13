@@ -1,7 +1,6 @@
 package org.brent.metallicspro.recpies;
 
 import org.brent.metallicspro.recpies.types.RecipeBuilder;
-import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,10 +13,8 @@ public class RecipeRegistry {
     public void add(@Nullable RecipeBuilder<?, ?> builder) {
         if (builder == null) return;
 
-        Bukkit.getLogger().info("[MetalicsPro] Started to register " + builder.getKey().toString());
         builder.registerRecipe();
         recipes.put(builder.getKey(), builder);
-        Bukkit.getLogger().info("[MetalicsPro] Ended register " + builder.getKey().toString());
     }
 
     public @Nullable RecipeBuilder<?, ?> getFromKey(NamespacedKey key) {

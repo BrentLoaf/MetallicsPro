@@ -4,7 +4,8 @@ import org.brent.metallicspro.MetallicsPro;
 import org.brent.metallicspro.items.CustomItem;
 import org.brent.metallicspro.items.CustomItemBuilder;
 import org.brent.metallicspro.items.ItemRegistry;
-import org.brent.metallicspro.items.metal.Metal;
+import org.brent.metallicspro.materials.FormType;
+import org.brent.metallicspro.materials.types.MetalMaterial;
 import org.brent.metallicspro.recpies.Ingredient;
 import org.brent.metallicspro.recpies.types.CraftBuilder;
 import org.brent.metallicspro.recpies.types.FurnaceBuilder;
@@ -21,7 +22,7 @@ public abstract class Crucible implements CustomItemBuilder {
     protected final UnfiredCrucible unfired;
     protected final FiredCrucible fired;
 
-    protected int speedMultiplier = 1;
+    protected int crucibleMultiplier = 1;
 
     public Crucible(String unfiredName, String firedName, ItemRarity rarity, Material... craftings) {
         unfired = new UnfiredCrucible(unfiredName, rarity);
@@ -41,7 +42,6 @@ public abstract class Crucible implements CustomItemBuilder {
 
         fired.addRecipeBuilder(
                 new FurnaceBuilder(fired.getItemStack(), Ingredient.of(unfired.getItemStack()), fired.getRawName())
-                        .addTypes(FurnaceBuilder.Type.NORMAL)
         );
     }
 
@@ -56,14 +56,14 @@ public abstract class Crucible implements CustomItemBuilder {
     public class UnfiredCrucible extends CustomItem {
 
         public UnfiredCrucible(String name, ItemRarity rarity) {
-            super("Unfired " + name + " Crucible", Material.BOWL, rarity);
+            super("Unfired " + name + " Crucible", Material.BOWL);
         }
     }
 
     public class FiredCrucible extends CustomItem {
 
         public FiredCrucible(String name, ItemRarity rarity) {
-            super(name + " Crucible", Material.BOWL, rarity);
+            super(name + " Crucible", Material.BOWL);
 
             rawAppend = "empty";
             modelPath = this.name.toLowerCase().replace(' ', '_');
@@ -74,8 +74,8 @@ public abstract class Crucible implements CustomItemBuilder {
         public List<CustomItem> getCrucibleTypes() {
             List<CustomItem> types = new ArrayList<>();
 
-            for (Metal metal : MetallicsPro.getMetalRegistry().getMetals()) {
-                CrucibleType type = new CrucibleType(name, metal, getItemStack());
+            for (MetalMaterial metalMaterial : MetallicsPro.getMaterialRegistry().getMetals().values()) {
+                CrucibleType type = new CrucibleType(name, metalMaterial, getItemStack());
 
                 types.add(type.getMolten());
                 types.add(type.getSolid());
@@ -89,28 +89,30 @@ public abstract class Crucible implements CustomItemBuilder {
             private final Molten molten;
             private final Solid solid;
 
-            public CrucibleType(String name, Metal metal, ItemStack base) {
-                molten = new Molten(name, metal);
-                solid = new Solid(name, metal);
+            public CrucibleType(String name, MetalMaterial metalMaterial, ItemStack base) {
+                molten = new Molten(name, metalMaterial);
+                solid = new Solid(name, metalMaterial);
+
+                double meltingSpeed = metalMaterial.getProperties().getHeatResistance().getMultiplier();
 
                 solid.addRecipeBuilder(
-                        new CraftBuilder(CraftBuilder.Type.SHAPELESS, solid.getItemStack(), solid.getRawName() + "_ingot")
+                        new CraftBuilder(CraftBuilder.Type.SHAPELESS, solid.getRawName() + "_ingot")
                                 .addIngredient(Ingredient.of(base))
-                                .addIngredient(Ingredient.of(metal.getIngot().getItemStack()))
+                                .addIngredient(Ingredient.of(metalMaterial.getItem(FormType.INGOT).getItemStack()))
                 );
                 solid.addRecipeBuilder(
-                        new CraftBuilder(CraftBuilder.Type.SHAPELESS, solid.getItemStack(), solid.getRawName() + "_powder")
+                        new CraftBuilder(CraftBuilder.Type.SHAPELESS, solid.getRawName() + "_powder")
                                 .addIngredient(Ingredient.of(base))
-                                .addIngredient(Ingredient.of(metal.getPowder().getItemStack()))
+                                .addIngredient(Ingredient.of(metalMaterial.getItem(FormType.POWDER).getItemStack()))
                 );
 
                 molten.addRecipeBuilder(
                         new FurnaceBuilder(molten.getItemStack(), Ingredient.of(solid.getItemStack()), molten.getRawName() + "_melt")
-                                .addTypes(FurnaceBuilder.Type.NORMAL, FurnaceBuilder.Type.BLAST)
-                                .setTimeTicks(Math.round(200 / speedMultiplier))
+                                .setTypes(FurnaceBuilder.Type.NORMAL, FurnaceBuilder.Type.BLAST)
+                                .setTimeTicks((int) Math.round((200 / crucibleMultiplier) * meltingSpeed))
                 );
                 molten.addRecipeBuilder(
-                        new CraftBuilder(CraftBuilder.Type.SHAPELESS, metal.getIngot().getItemStack(), molten.getRawName() + "_solidify")
+                        new CraftBuilder(CraftBuilder.Type.SHAPELESS, metalMaterial.getItem(FormType.INGOT).getItemStack(), molten.getRawName() + "_solidify")
                                 .addIngredient(Ingredient.of(molten.getItemStack())
                                         .setWillKeep(true)
                                         .setEditor((i, m) -> base))
@@ -127,13 +129,13 @@ public abstract class Crucible implements CustomItemBuilder {
 
             public class Molten extends CustomItem {
 
-                public Molten(String name, Metal metal) {
-                    super(name, Material.BOWL, ItemRarity.COMMON);
+                public Molten(String name, MetalMaterial metalMaterial) {
+                    super(name, Material.BOWL);
 
-                    rawAppend = metal.getRawName() + "_molten";
+                    rawAppend = metalMaterial.getRawName() + "_molten";
                     modelPath = name.toLowerCase().replace(' ', '_') + "_hot";
 
-                    addLore(ChatColor.RESET + "" + ChatColor.GRAY + "Contents: Molten " + metal.getName());
+                    addLore(ChatColor.RESET + "" + ChatColor.GRAY + "Contents: Molten " + metalMaterial.getName());
 
                     addMetaModifier(meta -> {
                         meta.setMaxStackSize(1);
@@ -143,13 +145,13 @@ public abstract class Crucible implements CustomItemBuilder {
 
             public class Solid extends CustomItem {
 
-                public Solid(String name, Metal metal) {
-                    super(name, Material.BOWL, ItemRarity.COMMON);
+                public Solid(String name, MetalMaterial metalMaterial) {
+                    super(name, Material.BOWL);
 
-                    rawAppend = metal.getRawName() + "_solid";
+                    rawAppend = metalMaterial.getRawName() + "_solid";
                     modelPath = name.toLowerCase().replace(' ', '_') + "_metal";
 
-                    addLore(ChatColor.RESET + "" + ChatColor.GRAY + "Contents: Solid " + metal.getName());
+                    addLore(ChatColor.RESET + "" + ChatColor.GRAY + "Contents: Solid " + metalMaterial.getName());
 
                     addMetaModifier(meta -> {
                         meta.setMaxStackSize(1);

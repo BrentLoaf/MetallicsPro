@@ -6,12 +6,11 @@ import org.bukkit.inventory.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 public class FurnaceBuilder extends RecipeBuilder<FurnaceBuilder, List<CookingRecipe<?>>> {
 
-    protected final HashSet<Type> types = new HashSet<>();
+    protected List<Type> types = List.of(Type.NORMAL);
 
     protected Ingredient input;
     protected float xp = 0.0f;
@@ -23,12 +22,24 @@ public class FurnaceBuilder extends RecipeBuilder<FurnaceBuilder, List<CookingRe
         keyAdd = "_furnace";
     }
 
+    public FurnaceBuilder(Ingredient input, String key) {
+        super(key);
+        this.input = input;
+        keyAdd = "_furnace";
+    }
+
+    public FurnaceBuilder(Ingredient input) {
+        super();
+        this.input = input;
+        keyAdd = "_furnace";
+    }
+
     public List<Type> getTypes() {
         return types.stream().toList();
     }
 
-    public FurnaceBuilder addTypes(Type... types) {
-        this.types.addAll(List.of(types));
+    public FurnaceBuilder setTypes(Type... types) {
+        this.types = List.of(types);
         return this;
     }
 
@@ -73,6 +84,11 @@ public class FurnaceBuilder extends RecipeBuilder<FurnaceBuilder, List<CookingRe
         }
 
         return recipes;
+    }
+
+    @Override
+    public void resolve() {
+        input.resolve();
     }
 
     @Override

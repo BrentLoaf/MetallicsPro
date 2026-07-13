@@ -24,6 +24,17 @@ public class CraftBuilder extends RecipeBuilder<CraftBuilder, CraftingRecipe> {
         keyAdd = "_crafting";
     }
 
+    public CraftBuilder(Type type, String key) {
+        super(key);
+        this.type = type;
+        keyAdd = "_crafting";
+    }
+
+    public CraftBuilder(Type type) {
+        super();
+        this.type = type;
+    }
+
     public Type getType() {
         return type;
     }
@@ -93,6 +104,12 @@ public class CraftBuilder extends RecipeBuilder<CraftBuilder, CraftingRecipe> {
     @Override
     public @Nullable CraftingRecipe getRecipe() {
         return this.type.getRecipe(this);
+    }
+
+    @Override
+    public void resolve() {
+        shapelessIngredients.stream().forEach(i -> i.resolve());
+        shapedIngredients.values().stream().forEach(i -> i.resolve());
     }
 
     public enum Type {

@@ -1,13 +1,12 @@
 package org.brent.metallicspro.events;
 
-import org.brent.metallicspro.blocks.ore.OreBlock;
 import org.bukkit.block.Block;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-public class OreBreakEvent extends Event {
+public class OreBreakEvent {
 
-    private static final HandlerList handlers = new HandlerList();
+    /*private static final HandlerList handlers = new HandlerList();
 
     private final Block block;
     private final OreBlock oreBlock;
@@ -42,5 +41,5 @@ public class OreBreakEvent extends Event {
 
     public static HandlerList getHandlerList() {
         return handlers;
-    }
+    }*/
 }

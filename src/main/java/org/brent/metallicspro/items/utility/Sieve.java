@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemRarity;
 public class Sieve extends CustomItem {
 
     public Sieve() {
-        super("Sieve", Material.PAPER, ItemRarity.COMMON);
+        super("Sieve", Material.PAPER);
 
         addRecipeBuilder(
                 new CraftBuilder(CraftBuilder.Type.SHAPELESS, getItemStack(), getRawName())

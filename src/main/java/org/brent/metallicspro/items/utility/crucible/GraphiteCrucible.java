@@ -8,6 +8,6 @@ public class GraphiteCrucible extends Crucible {
     public GraphiteCrucible() {
         super("Carbon", "Graphite", ItemRarity.COMMON, Material.COAL, Material.CHARCOAL);
 
-        speedMultiplier = 2;
+        crucibleMultiplier = 2;
     }
 }

@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemRarity;
 public class MortarAndPestle extends CustomItem {
 
     public MortarAndPestle() {
-        super("Mortar and Pestle", Material.FLOWER_POT, ItemRarity.COMMON);
+        super("Mortar and Pestle", Material.FLOWER_POT);
 
         addRecipeBuilder(
                 new CraftBuilder(CraftBuilder.Type.SHAPELESS, getItemStack(), getRawName())

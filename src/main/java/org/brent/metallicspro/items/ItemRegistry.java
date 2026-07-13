@@ -1,9 +1,7 @@
 package org.brent.metallicspro.items;
 
 import org.brent.metallicspro.MetallicsPro;
-import org.brent.metallicspro.items.utility.*;
-import org.brent.metallicspro.items.utility.crucible.CeramicCrucible;
-import org.brent.metallicspro.items.utility.crucible.GraphiteCrucible;
+import org.brent.metallicspro.items.utility.Sieve;
 import org.bukkit.Bukkit;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -17,10 +15,6 @@ public class ItemRegistry {
     private final Set<CustomItemBuilder> itemBuilders = new HashSet<>();
 
     public ItemRegistry() {
-        add(new GraphiteCrucible());
-        add(new CeramicCrucible());
-
-        add(new MortarAndPestle());
         add(new Sieve());
     }
 
